@@ -29,8 +29,8 @@ public class CameraMovement : MonoBehaviour
     }
     private void Update()
     {
-        Vector3 cameraGoal = currOffset + _Follow.position;
-        cameraGoal = new Vector3(cameraGoal.x, currOffset.y, cameraGoal.z);
+        Vector3 cameraGoal = _Follow.position + currOffset;
+        //cameraGoal = new Vector3(cameraGoal.x, cameraGoal.y, cameraGoal.z);
         Vector3 lookPos = _Follow.position - mainCamera.position;
 
         Quaternion targetRotation = Quaternion.LookRotation(lookPos);
