@@ -24,7 +24,7 @@ public class TailMovement : MonoBehaviour
         _segmentsPos[0] = targetTransform.position;
         for (int i = 1; i < _segmentsPos.Length; i++)
         {
-            _segmentsPos[i] = Vector3.SmoothDamp(_segmentsPos[i], _segmentsPos[i - 1] + targetTransform.right * segmentDistance, ref _segmentsVel[i], smoothSpeed);
+            _segmentsPos[i] = Vector3.SmoothDamp(_segmentsPos[i], _segmentsPos[i - 1] - targetTransform.forward * segmentDistance, ref _segmentsVel[i], smoothSpeed);
         }
 
         for (int i = 0; i < bodySegments.Length; i++)

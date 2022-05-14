@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Axolotl.unity
+    guid: 71e02cc22a845f24e87643d9524793cd
   m_configObjects: {}
