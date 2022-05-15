@@ -9,9 +9,10 @@ public class TailMovement : MonoBehaviour
     [SerializeField] Transform[] bodySegments;
     [SerializeField] Transform targetTransform;
     public float segmentDistance;
-    public float smoothSpeed; 
+    public float smoothSpeed;
     private Vector3[] _segmentsPos;
     private Vector3[] _segmentsVel;
+    public bool shouldRotate = false;
     void Start()
     {
         _segmentsPos = new Vector3[bodySegments.Length];
@@ -20,7 +21,8 @@ public class TailMovement : MonoBehaviour
 
     void Update()
     {
-
+        if (shouldRotate)
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetTransform.rotation, 10f * Time.deltaTime);
         _segmentsPos[0] = targetTransform.position;
         for (int i = 1; i < _segmentsPos.Length; i++)
         {

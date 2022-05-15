@@ -13,7 +13,7 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private float _rotationSpeed = 2f;
     [SerializeField] private float _movementSpeed = 5f;
     [SerializeField] private float _movementTime = 2f;
-    [SerializeField] private float _distanceToMove = 2f;
+    [SerializeField] public float _distanceToJump = 2f;
     [SerializeField] private float _rockSpeed = 2f;
     [SerializeField] private float _jumpHeight = 3.5f;
     [SerializeField] private Transform _parentChar;
@@ -26,8 +26,10 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private LayerMask floorOnly;
     [SerializeField] private float _upHillSlope = .8f;
     [SerializeField] private Transform forwardCamera;
+    [SerializeField] private float _fallTime = 1f;
     private float _originalSpeed;
     private bool jumping = false;
+    private bool isFalling = false;
 
     float curveDelta = 0;
     private bool isUpHill = false;
@@ -73,14 +75,15 @@ public class CharacterController : MonoBehaviour
 
             yaw = movement != Vector3.zero ? Mathf.PingPong(Time.time * _rockSpeed, 15f) : Mathf.PingPong(Time.time, 15f);
             //HeadBobbing
-
             _head.localRotation = Quaternion.AngleAxis(yaw, Vector3.up);
-
-            Vector3 target = (_completeCharacter.position + Vector3.up * 4f) + _completeCharacter.forward * _distanceToMove;
-            if (Input.GetKeyDown(KeyCode.Space))
+            //jump
+            Vector3 target = (_completeCharacter.position + Vector3.up * _jumpHeight) + _completeCharacter.forward * _distanceToJump;
+            if (Input.GetKeyDown(KeyCode.Space) && !isFalling)
                 StartCoroutine(JumpNow(target, _movementTime));
 
-            _completeCharacter.position = CheckForFloor(_completeCharacter.position + _completeCharacter.forward * .1f) - _completeCharacter.forward * .1f;
+            if (!isFalling)
+                _completeCharacter.position = CheckForFloor(_completeCharacter.position + _completeCharacter.forward * .1f) - _completeCharacter.forward * .1f;
+
 
             if (isUpHill)
                 _movementSpeed = 0f;
@@ -139,8 +142,6 @@ public class CharacterController : MonoBehaviour
         {
             Debug.DrawRay(from, _completeCharacter.TransformDirection(Vector3.down) * hit.distance, Color.green);
             //Debug.Log(hit.distance);
-            Vector3 offSetFloot = new Vector3(hit.point.x, hit.point.y + _setHeight, hit.point.z);
-            isThereFloor = offSetFloot;
 
 
             Quaternion newQdir = Quaternion.FromToRotation(transform.up, hit.normal) * _head.rotation;
@@ -148,6 +149,21 @@ public class CharacterController : MonoBehaviour
             _head.rotation = newQdir;
 
             _movementSpeed = _originalSpeed;
+            Debug.Log(hit.distance);
+            Vector3 offSetFloot = new Vector3(hit.point.x, hit.point.y + _setHeight, hit.point.z);
+            isThereFloor = offSetFloot;
+
+            //Falling
+            if (hit.distance > 2.5f && !isFalling)
+            {
+                if (!jumping)
+                {
+                    
+                    StartCoroutine(FallingNow(_completeCharacter.forward * 5f +  offSetFloot, _fallTime));
+                }
+            }
+
+
 
 
         }
@@ -161,7 +177,24 @@ public class CharacterController : MonoBehaviour
         return isThereFloor;
     }
 
+    IEnumerator FallingNow(Vector3 target, float time)
+    {
+        isFalling = true;
+        float counter = 0;
+        Vector3 startPos = _completeCharacter.position;
+        Vector3 endPos = CheckForFloor(target);
+        while (counter < time)
+        {
+            float t = Mathf.Clamp01(counter / time);
 
+            _completeCharacter.position = Vector3.Lerp(startPos, endPos, t);
+            yield return new WaitForEndOfFrame();
+            counter += Time.deltaTime;
+
+        }
+
+        isFalling = false;
+    }
     private void IsDownHill()
     {
         RaycastHit frontHit;
@@ -175,7 +208,7 @@ public class CharacterController : MonoBehaviour
             {
                 Debug.DrawRay(_completeCharacter.position - _completeCharacter.forward, _completeCharacter.TransformDirection(Vector3.down) * rearHit.distance, Color.cyan);
             }
-            Debug.Log($"FrontDistance is : {frontHit.distance} and BackDistance is: {rearHit.distance} and the difference is {rearHit.distance - frontHit.distance}");
+            //Debug.Log($"FrontDistance is : {frontHit.distance} and BackDistance is: {rearHit.distance} and the difference is {rearHit.distance - frontHit.distance}");
             isUpHill = rearHit.distance - frontHit.distance > _upHillSlope ? true : false;
         }
 

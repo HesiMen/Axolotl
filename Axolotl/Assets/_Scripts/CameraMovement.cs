@@ -21,15 +21,16 @@ public class CameraMovement : MonoBehaviour
     private void Start()
     {
 
-        _offSet1 = _Follow.position + camera1.position;
-        _offSet2 = _Follow.position + camera2.position;
-        _offSet3 = _Follow.position + camera3.position;
+        _offSet1 = _Follow.position - camera1.position;
+        _offSet2 = _Follow.position - camera2.position;
+        _offSet3 = _Follow.position - camera3.position;
 
         currOffset = _offSet1;
+        Debug.Log(currOffset);
     }
     private void Update()
     {
-        Vector3 cameraGoal = _Follow.position + currOffset;
+        Vector3 cameraGoal = _Follow.position - currOffset;
         //cameraGoal = new Vector3(cameraGoal.x, cameraGoal.y, cameraGoal.z);
         Vector3 lookPos = _Follow.position - mainCamera.position;
 
