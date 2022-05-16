@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,34 +11,42 @@ public class TailManager : MonoBehaviour
 
     [SerializeField] private MeshRenderer[] _MatToChange;
 
-    private int counter = 0;
+    public int counter = -1;
 
 
 
     private void Start()
     {
-
+        counter = -1;
+        _charController.OnJump.AddListener(HasJump);
         foreach (var mat in _MatToChange)
         {
             mat.material = _originalMat;
         }
     }
 
-
+    private void HasJump()
+    {
+        counter = -1;
+        foreach (var tailSeg in _MatToChange)
+        {
+            tailSeg.material = _originalMat;
+        }
+    }
 
     private void CollectedFood()
     {
 
-
+        counter += 1;
         if (counter < 3)
         {
             _MatToChange[counter].material = collectMaterial;
         }
         else
         {
-            counter = 0;
+            counter = 2;
         }
-        counter += 1;
+    
     }
 
 
@@ -53,26 +62,5 @@ public class TailManager : MonoBehaviour
     }
 
 
-    private void CheckTailForJump()
-    {
-        switch (counter)
-        {
-            case 0:
-
-                break;
-
-            case 1:
-
-                break;
-
-            case 2:
-
-                break;
-
-
-
-            default:
-                break;
-        }
-    }
+   
 }

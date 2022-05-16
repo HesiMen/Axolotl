@@ -1,6 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 /// <summary>
 /// For my character controller, I am going to make the movement be world based.
 /// Rotations will be according to the direction its heading
@@ -8,17 +8,24 @@ using UnityEngine;
 /// Movement should simulate an axolotl => Swim/walk should feel light and will slerp towards a point in front of the the character
 /// 
 /// </summary>
+/// 
+
 public class CharacterController : MonoBehaviour
 {
+    [SerializeField] private TailManager _tailManager;
+    [Header("Movement")]
     [SerializeField] private float _rotationSpeed = 2f;
     [SerializeField] private float _movementSpeed = 5f;
     [SerializeField] private float _movementTime = 2f;
     [SerializeField] public float _distanceToJump = 2f;
     [SerializeField] private float _rockSpeed = 2f;
-    [SerializeField] private float _jumpHeight = 3.5f;
+    [SerializeField] private float _MaxJumpHeight = 3.5f;
+    private float currJumpHeigt;
+    private float currDistanceJump;
     [SerializeField] private Transform _parentChar;
     [SerializeField] private Transform _completeCharacter;
     [SerializeField] private Transform _head;
+    [Header("Anim Curves Movement")]
     [SerializeField] private AnimationCurve jumpLerp;
     [SerializeField] private AnimationCurve headAnimationJump;
     [SerializeField] private AnimationCurve swimAnimation;
@@ -33,9 +40,14 @@ public class CharacterController : MonoBehaviour
 
     float curveDelta = 0;
     private bool isUpHill = false;
+
+    public UnityEvent OnJump;
+
     private void Start()
     {
         _originalSpeed = _movementSpeed;
+        currJumpHeigt = _MaxJumpHeight;
+        currDistanceJump = _distanceToJump;
     }
     void Update()
     {
@@ -77,7 +89,33 @@ public class CharacterController : MonoBehaviour
             //HeadBobbing
             _head.localRotation = Quaternion.AngleAxis(yaw, Vector3.up);
             //jump
-            Vector3 target = (_completeCharacter.position + Vector3.up * _jumpHeight) + _completeCharacter.forward * _distanceToJump;
+            switch (_tailManager.counter)
+            {
+
+                case -1:
+                    currJumpHeigt = _MaxJumpHeight / 4f;
+                    currDistanceJump = _distanceToJump / 4f;
+                    break;
+                case 0:
+                    currJumpHeigt = _MaxJumpHeight * 2F / 4f;
+                    currDistanceJump = _distanceToJump * 2F / 4f;
+                    break;
+
+                case 1:
+                    currJumpHeigt = (_MaxJumpHeight * 3f) / 4f;
+                    currDistanceJump = (_distanceToJump * 3f) / 4f;
+                    break;
+
+                case 2:
+                    currJumpHeigt = _MaxJumpHeight;
+                    currDistanceJump = _distanceToJump;
+                    break;
+                default:
+                    break;
+
+            }
+
+            Vector3 target = (_completeCharacter.position + Vector3.up * currJumpHeigt) + _completeCharacter.forward * currDistanceJump;
             if (Input.GetKeyDown(KeyCode.Space) && !isFalling)
                 StartCoroutine(JumpNow(target, _movementTime));
 
@@ -103,6 +141,7 @@ public class CharacterController : MonoBehaviour
     {
 
         jumping = true;
+        OnJump?.Invoke();
         float counter = 0;
         Vector3 startPos = _completeCharacter.position;
         Vector3 startHeadPos = _head.localPosition;
@@ -118,7 +157,7 @@ public class CharacterController : MonoBehaviour
             _completeCharacter.position = Vector3.Lerp(startPos, endPos, anim);
 
             //headJumpAnimation
-            _head.localPosition = Vector3.Lerp(startHeadPos, new Vector3(0f, headAnim * _jumpHeight, 0f), t);
+            _head.localPosition = Vector3.Lerp(startHeadPos, new Vector3(0f, headAnim * currJumpHeigt, 0f), t);
 
             //headbob
             float yaw = Mathf.PingPong(Time.time * _rockSpeed, 10f);
@@ -142,30 +181,21 @@ public class CharacterController : MonoBehaviour
         {
             Debug.DrawRay(from, _completeCharacter.TransformDirection(Vector3.down) * hit.distance, Color.green);
             //Debug.Log(hit.distance);
-
-
             Quaternion newQdir = Quaternion.FromToRotation(transform.up, hit.normal) * _head.rotation;
-
             _head.rotation = newQdir;
-
             _movementSpeed = _originalSpeed;
-            Debug.Log(hit.distance);
+            // Debug.Log(hit.distance);
             Vector3 offSetFloot = new Vector3(hit.point.x, hit.point.y + _setHeight, hit.point.z);
             isThereFloor = offSetFloot;
-
             //Falling
             if (hit.distance > 2.5f && !isFalling)
             {
                 if (!jumping)
                 {
-                    
-                    StartCoroutine(FallingNow(_completeCharacter.forward * 5f +  offSetFloot, _fallTime));
+
+                    StartCoroutine(FallingNow(_completeCharacter.forward * 5f + offSetFloot, _fallTime));
                 }
             }
-
-
-
-
         }
         else
         {
@@ -198,8 +228,6 @@ public class CharacterController : MonoBehaviour
     private void IsDownHill()
     {
         RaycastHit frontHit;
-
-
         if (Physics.Raycast(_completeCharacter.position, _completeCharacter.TransformDirection(Vector3.down), out frontHit, Mathf.Infinity, floorOnly))//front 
         {
             Debug.DrawRay(_completeCharacter.position, _completeCharacter.TransformDirection(Vector3.down) * frontHit.distance, Color.cyan);
