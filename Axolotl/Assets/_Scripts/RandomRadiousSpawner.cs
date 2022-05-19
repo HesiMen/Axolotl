@@ -5,11 +5,11 @@ public class RandomRadiousSpawner : MonoBehaviour
     [SerializeField] GameObject _collectable;
     [SerializeField] Collider _colliderBounds;
     [SerializeField] LayerMask floorOnly;
-
+    [SerializeField] int possibleSpawnAmmount = 10;
 
     private void Start()
     {
-        SpawnNow(5);
+        SpawnNow(possibleSpawnAmmount);
     }
     private void SpawnNow(int ammount)
     {
