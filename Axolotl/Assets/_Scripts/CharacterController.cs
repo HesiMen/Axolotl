@@ -91,36 +91,42 @@ public class CharacterController : MonoBehaviour
             //jump
             // wanna make the collection clearer - speed up depending on tail collect.
             float speedCollects = 1;
-            switch (_tailManager.counter)
+            if (_tailManager.isTailOff)
             {
-
-                case -1:
-                    currJumpHeigt = _MaxJumpHeight / 4f;
-                    currDistanceJump = _distanceToJump / 4f;
-                    speedCollects = 1f;
-                    break;
-                case 0:
-                    currJumpHeigt = _MaxJumpHeight * 2F / 4f;
-                    currDistanceJump = _distanceToJump * 2F / 4f;
-                    speedCollects = 1.2f;
-                    break;
-
-                case 1:
-                    currJumpHeigt = (_MaxJumpHeight * 3f) / 4f;
-                    currDistanceJump = (_distanceToJump * 3f) / 4f;
-                    speedCollects = 1.35f;
-                    break;
-
-                case 2:
-                    currJumpHeigt = _MaxJumpHeight;
-                    currDistanceJump = _distanceToJump;
-                    speedCollects = 1.5f;
-                    break;
-                default:
-                    break;
-
+                speedCollects = .5f;
             }
+            else
+            {
+                switch (_tailManager.counter)
+                {
 
+                    case -1:
+                        currJumpHeigt = _MaxJumpHeight / 4f;
+                        currDistanceJump = _distanceToJump / 4f;
+                        speedCollects = 1f;
+                        break;
+                    case 0:
+                        currJumpHeigt = _MaxJumpHeight * 2F / 4f;
+                        currDistanceJump = _distanceToJump * 2F / 4f;
+                        speedCollects = 1.2f;
+                        break;
+
+                    case 1:
+                        currJumpHeigt = (_MaxJumpHeight * 3f) / 4f;
+                        currDistanceJump = (_distanceToJump * 3f) / 4f;
+                        speedCollects = 1.35f;
+                        break;
+
+                    case 2:
+                        currJumpHeigt = _MaxJumpHeight;
+                        currDistanceJump = _distanceToJump;
+                        speedCollects = 1.5f;
+                        break;
+                    default:
+                        break;
+
+                }
+            }
             Vector3 target = (_completeCharacter.position + Vector3.up * currJumpHeigt) + _completeCharacter.forward * currDistanceJump;
             if (Input.GetKeyDown(KeyCode.Space) && !isFalling && !_tailManager.isTailOff)
                 StartCoroutine(JumpNow(target, _movementTime));
@@ -128,7 +134,7 @@ public class CharacterController : MonoBehaviour
             if (!isFalling)
                 _completeCharacter.position = CheckForFloor(_completeCharacter.position + _completeCharacter.forward * .1f) - _completeCharacter.forward * .1f;
 
-           
+
             if (isUpHill)
                 _movementSpeed = 0f;
             else

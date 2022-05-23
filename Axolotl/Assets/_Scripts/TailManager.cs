@@ -64,7 +64,7 @@ public class TailManager : MonoBehaviour
     public void TakeTailOff()
     {
         NoJumps();
-        tailMovement.segmentDistance = 0;
+        tailMovement.segmentDistance = -.3f;
         isTailOff = true;
         //start growing
     }
@@ -76,11 +76,12 @@ public class TailManager : MonoBehaviour
             CollectedFood();
             other.gameObject.SetActive(false);
         }
-
-        if (other.GetComponent<SlowTailDamage>())
+        // Do slow or take tail
+        if (other.GetComponent<SlowTailDamage>() != null)
         {
-            if (!other.GetComponent<SlowTailDamage>().shouldTakeTail)
-                SlowDown();
+            SlowDown();
+            if (other.GetComponent<SlowTailDamage>().shouldTakeTail)
+                TakeTailOff();
 
         }
 
@@ -88,9 +89,10 @@ public class TailManager : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.GetComponent<SlowTailDamage>())
+        if (other.GetComponent<SlowTailDamage>() != null)
         {
-            isSlow = false;
+            if (!other.GetComponent<SlowTailDamage>().shouldTakeTail)
+                isSlow = false;
 
         }
     }
