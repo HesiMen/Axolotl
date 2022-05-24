@@ -5,5 +5,5 @@ using UnityEngine;
 public class Collector : MonoBehaviour
 {
 
-
+    [SerializeField] public bool isAdapt = false;
 }

@@ -42,7 +42,7 @@ public class CharacterController : MonoBehaviour
     private bool isUpHill = false;
 
     public UnityEvent OnJump;
-
+    float speedCollects = 0f;
     private void Start()
     {
         _originalSpeed = _movementSpeed;
@@ -90,58 +90,74 @@ public class CharacterController : MonoBehaviour
             _head.localRotation = Quaternion.AngleAxis(yaw, Vector3.up);
             //jump
             // wanna make the collection clearer - speed up depending on tail collect.
-            float speedCollects = 1;
-            if (_tailManager.isTailOff)
+          
+            switch (_tailManager.currState)
             {
-                speedCollects = .5f;
+                case SlowTailDamage.AOETail.slow:
+                    speedCollects = .25f;
+                    break;
+                case SlowTailDamage.AOETail.tailoff:
+                    speedCollects = .3f;
+                    break;
+                case SlowTailDamage.AOETail.adapt:
+                    speedCollects = _tailManager.growthPercent / 30f;
+                    break;
+                case SlowTailDamage.AOETail.none:
+                    switch (_tailManager.counter)
+                    {
+
+                        case -1:
+                            currJumpHeigt = _MaxJumpHeight / 4f;
+                            currDistanceJump = _distanceToJump / 4f;
+                            speedCollects = 1f;
+                            break;
+                        case 0:
+                            currJumpHeigt = _MaxJumpHeight * 2F / 4f;
+                            currDistanceJump = _distanceToJump * 2F / 4f;
+                            speedCollects = 1.2f;
+                            break;
+
+                        case 1:
+                            currJumpHeigt = (_MaxJumpHeight * 3f) / 4f;
+                            currDistanceJump = (_distanceToJump * 3f) / 4f;
+                            speedCollects = 1.35f;
+                            break;
+
+                        case 2:
+                            currJumpHeigt = _MaxJumpHeight;
+                            currDistanceJump = _distanceToJump;
+                            speedCollects = 1.5f;
+                            break;
+                        default:
+                            break;
+
+                    }
+                    break;
+                default:
+                    break;
             }
-            else
-            {
-                switch (_tailManager.counter)
-                {
 
-                    case -1:
-                        currJumpHeigt = _MaxJumpHeight / 4f;
-                        currDistanceJump = _distanceToJump / 4f;
-                        speedCollects = 1f;
-                        break;
-                    case 0:
-                        currJumpHeigt = _MaxJumpHeight * 2F / 4f;
-                        currDistanceJump = _distanceToJump * 2F / 4f;
-                        speedCollects = 1.2f;
-                        break;
 
-                    case 1:
-                        currJumpHeigt = (_MaxJumpHeight * 3f) / 4f;
-                        currDistanceJump = (_distanceToJump * 3f) / 4f;
-                        speedCollects = 1.35f;
-                        break;
 
-                    case 2:
-                        currJumpHeigt = _MaxJumpHeight;
-                        currDistanceJump = _distanceToJump;
-                        speedCollects = 1.5f;
-                        break;
-                    default:
-                        break;
 
-                }
-            }
             Vector3 target = (_completeCharacter.position + Vector3.up * currJumpHeigt) + _completeCharacter.forward * currDistanceJump;
-            if (Input.GetKeyDown(KeyCode.Space) && !isFalling && !_tailManager.isTailOff)
+            if (Input.GetKeyDown(KeyCode.Space) && !isFalling && _tailManager.currState != SlowTailDamage.AOETail.tailoff)
                 StartCoroutine(JumpNow(target, _movementTime));
 
             if (!isFalling)
-                _completeCharacter.position = CheckForFloor(_completeCharacter.position + _completeCharacter.forward * .1f) - _completeCharacter.forward * .1f;
+            {
+                Vector3 movingVectorFloor = CheckForFloor(_completeCharacter.position + _completeCharacter.forward * .1f) - _completeCharacter.forward * .1f;
+                if (movingVectorFloor != Vector3.zero)
+                    _completeCharacter.position = movingVectorFloor;
+            }
+
 
 
             if (isUpHill)
                 _movementSpeed = 0f;
             else
             {
-                if (_tailManager.isSlow)
-                    _movementSpeed = _originalSpeed / 4f;
-                else
+               
                     _movementSpeed = _originalSpeed * speedCollects;
             }
 
@@ -173,7 +189,8 @@ public class CharacterController : MonoBehaviour
             anim = jumpLerp.Evaluate(t);
             headAnim = headAnimationJump.Evaluate(t);
             //Debug.Log(anim);
-            _completeCharacter.position = Vector3.Lerp(startPos, endPos, anim);
+            if (endPos != Vector3.zero)
+                _completeCharacter.position = Vector3.Lerp(startPos, endPos, anim);
 
             //headJumpAnimation
             _head.localPosition = Vector3.Lerp(startHeadPos, new Vector3(0f, headAnim * currJumpHeigt, 0f), t);
@@ -191,9 +208,11 @@ public class CharacterController : MonoBehaviour
         jumping = false;
     }
 
+    Vector3 prevPos;
     private Vector3 CheckForFloor(Vector3 from)
     {
         Vector3 isThereFloor;
+
         RaycastHit hit;
 
         if (Physics.Raycast(from, _completeCharacter.TransformDirection(Vector3.down), out hit, Mathf.Infinity, floorOnly))
@@ -215,11 +234,12 @@ public class CharacterController : MonoBehaviour
                     StartCoroutine(FallingNow(_completeCharacter.forward * 5f + offSetFloot, _fallTime));
                 }
             }
+            prevPos = _completeCharacter.position;
         }
         else
         {
             Debug.DrawRay(_head.position, _head.TransformDirection(Vector3.down) * 1000, Color.red);
-            isThereFloor = _completeCharacter.position;
+            isThereFloor = prevPos;
             _movementSpeed = 0f;
         }
 

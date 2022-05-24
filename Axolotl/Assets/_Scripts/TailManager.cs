@@ -8,13 +8,15 @@ public class TailManager : MonoBehaviour
     [SerializeField] private CharacterController _charController;
     [SerializeField] private Material _originalMat;
     [SerializeField] private Material collectMaterial;
+    [SerializeField] private Material adapterMaterial;
     [SerializeField] private TailMovement tailMovement;
     [SerializeField] private MeshRenderer[] _MatToChange;
-
+    [SerializeField] private MeshRenderer[] adaptingMesh;
+    public float scaleGrowth = 1f;
     public int counter = -1;
-
-    public bool isTailOff = false;
-    public bool isSlow = false;
+    public SlowTailDamage.AOETail currState = SlowTailDamage.AOETail.none;
+    private bool isGrowing = false;
+    public float growthPercent = .3f;
     private void Start()
     {
         counter = -1;
@@ -57,7 +59,7 @@ public class TailManager : MonoBehaviour
     public void SlowDown()
     {
         NoJumps();
-        isSlow = true;
+        currState = SlowTailDamage.AOETail.slow;
 
     }
 
@@ -65,7 +67,7 @@ public class TailManager : MonoBehaviour
     {
         NoJumps();
         tailMovement.segmentDistance = -.3f;
-        isTailOff = true;
+        currState = SlowTailDamage.AOETail.tailoff;
         //start growing
     }
 
@@ -73,15 +75,41 @@ public class TailManager : MonoBehaviour
     {
         if (other.GetComponent<Collector>() != null)
         {
-            CollectedFood();
+            Collector collected = other.GetComponent<Collector>();
+            if (currState != SlowTailDamage.AOETail.tailoff)
+            {
+                CollectedFood();
+            }
+            else if (collected.isAdapt)
+            {
+                EnhanceGrowth();
+            }
             other.gameObject.SetActive(false);
         }
         // Do slow or take tail
         if (other.GetComponent<SlowTailDamage>() != null)
         {
-            SlowDown();
-            if (other.GetComponent<SlowTailDamage>().shouldTakeTail)
-                TakeTailOff();
+            SlowTailDamage slowTail = other.GetComponent<SlowTailDamage>();
+
+            switch (slowTail.aoeTail)
+            {
+                case SlowTailDamage.AOETail.slow:
+                    SlowDown();
+                    break;
+                case SlowTailDamage.AOETail.tailoff:
+                    TakeTailOff();
+                    break;
+
+                case SlowTailDamage.AOETail.adapt:
+                    if (!isGrowing)
+                        StartCoroutine(StartTailGrowth());
+                    break;
+                case SlowTailDamage.AOETail.none:
+                    break;
+                default:
+                    break;
+            }
+
 
         }
 
@@ -91,12 +119,49 @@ public class TailManager : MonoBehaviour
     {
         if (other.GetComponent<SlowTailDamage>() != null)
         {
-            if (!other.GetComponent<SlowTailDamage>().shouldTakeTail)
-                isSlow = false;
+            SlowTailDamage slowTail = other.GetComponent<SlowTailDamage>();
+
+            switch (slowTail.aoeTail)
+            {
+                case SlowTailDamage.AOETail.slow:
+                    currState = SlowTailDamage.AOETail.none;
+                    break;
+                case SlowTailDamage.AOETail.tailoff:
+                    break;
+
+                case SlowTailDamage.AOETail.adapt:
+                    break;
+                case SlowTailDamage.AOETail.none:
+                    break;
+                default:
+                    break;
+            }
 
         }
     }
 
 
+    private void EnhanceGrowth()
+    {
+        scaleGrowth += .3f;
+    }
+    IEnumerator StartTailGrowth()
+    {
+        isGrowing = true;
+        currState = SlowTailDamage.AOETail.adapt;
+        while (growthPercent < 100f)
+        {
+
+            growthPercent += Time.deltaTime * scaleGrowth;
+
+            tailMovement.segmentDistance = (.35f * growthPercent) / 100f;
+            yield return null;
+        }
+
+        foreach (var mesh in adaptingMesh)
+        {
+            mesh.material = adapterMaterial;
+        }
+    }
 
 }

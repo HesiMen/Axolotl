@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class SlowTailDamage : MonoBehaviour
 {
-    [SerializeField] public bool shouldTakeTail = false;
+    public enum AOETail { slow, tailoff, adapt, none}
 
+
+    [SerializeField] public AOETail aoeTail = AOETail.slow;
 
 
 
