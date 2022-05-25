@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 /// <summary>
-/// For my character controller, I am going to make the movement be world based.
+/// For my character controller, I am going to make the movement be world based. - this got to be camera forward -felt better. 
 /// Rotations will be according to the direction its heading
 /// if pressing right, the character will look to the right and start moving.
 /// Movement should simulate an axolotl => Swim/walk should feel light and will slerp towards a point in front of the the character

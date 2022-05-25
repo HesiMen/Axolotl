@@ -6,4 +6,5 @@ public class Collector : MonoBehaviour
 {
 
     [SerializeField] public bool isAdapt = false;
+    public bool isLast = false;
 }

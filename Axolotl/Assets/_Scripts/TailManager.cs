@@ -17,6 +17,9 @@ public class TailManager : MonoBehaviour
     public SlowTailDamage.AOETail currState = SlowTailDamage.AOETail.none;
     private bool isGrowing = false;
     public float growthPercent = .3f;
+    [SerializeField] private AudioSource collectA;
+    [SerializeField] private AudioSource collectB;
+    [SerializeField] private AudioSource collectC;
     private void Start()
     {
         counter = -1;
@@ -47,6 +50,7 @@ public class TailManager : MonoBehaviour
         counter += 1;
         if (counter < 3)
         {
+            collectA.Play();
             _MatToChange[counter].material = collectMaterial;
         }
         else
@@ -83,6 +87,10 @@ public class TailManager : MonoBehaviour
             else if (collected.isAdapt)
             {
                 EnhanceGrowth();
+            }
+            if(currState == SlowTailDamage.AOETail.tailoff)
+            {
+                collectB.Play();
             }
             other.gameObject.SetActive(false);
         }
@@ -144,6 +152,7 @@ public class TailManager : MonoBehaviour
     private void EnhanceGrowth()
     {
         scaleGrowth += .3f;
+        collectC.Play();
     }
     IEnumerator StartTailGrowth()
     {
