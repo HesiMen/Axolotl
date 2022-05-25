@@ -20,8 +20,11 @@ public class TailManager : MonoBehaviour
     [SerializeField] private AudioSource collectA;
     [SerializeField] private AudioSource collectB;
     [SerializeField] private AudioSource collectC;
+
+    [SerializeField] private GameObject thanksText;
     private void Start()
     {
+        thanksText.SetActive(false);
         counter = -1;
         _charController.OnJump.AddListener(HasJump);
         foreach (var mat in _MatToChange)
@@ -88,11 +91,17 @@ public class TailManager : MonoBehaviour
             {
                 EnhanceGrowth();
             }
-            if(currState == SlowTailDamage.AOETail.tailoff)
+            if(currState == SlowTailDamage.AOETail.tailoff && !isGrowing)
             {
                 collectB.Play();
             }
             other.gameObject.SetActive(false);
+
+            if (collected.isLast)
+            {
+                //show thanks
+                thanksText.SetActive(true);
+            }
         }
         // Do slow or take tail
         if (other.GetComponent<SlowTailDamage>() != null)

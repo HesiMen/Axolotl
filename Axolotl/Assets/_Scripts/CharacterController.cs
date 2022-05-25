@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 /// <summary>
 /// For my character controller, I am going to make the movement be world based. - this got to be camera forward -felt better. 
 /// Rotations will be according to the direction its heading
@@ -90,7 +91,7 @@ public class CharacterController : MonoBehaviour
             _head.localRotation = Quaternion.AngleAxis(yaw, Vector3.up);
             //jump
             // wanna make the collection clearer - speed up depending on tail collect.
-          
+
             switch (_tailManager.currState)
             {
                 case SlowTailDamage.AOETail.slow:
@@ -157,8 +158,8 @@ public class CharacterController : MonoBehaviour
                 _movementSpeed = 0f;
             else
             {
-               
-                    _movementSpeed = _originalSpeed * speedCollects;
+
+                _movementSpeed = _originalSpeed * speedCollects;
             }
 
 
@@ -167,6 +168,8 @@ public class CharacterController : MonoBehaviour
         }
 
 
+        if (Input.GetKeyDown(KeyCode.R))
+            SceneManager.LoadScene(0);
 
 
     }

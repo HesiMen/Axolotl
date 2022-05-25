@@ -261,7 +261,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 6e72471165f82b24a8901fa583e2ac0e, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 5abdfead9c5ec3c4daf67ffca29959a6, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.093
   m_Pitch: 1
@@ -4722,7 +4722,10 @@ MonoBehaviour:
 
     SPACE - JUMP
 
-    CAMERA - NUMBERS: 1, 2, 3, 4'
+    CAMERA - NUMBERS: 1, 2, 3, 4
+
+    RESET
+    - R'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -28615,6 +28618,85 @@ Transform:
   m_Father: {fileID: 1758202528}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &917277932
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 917277933}
+  - component: {fileID: 917277935}
+  - component: {fileID: 917277934}
+  m_Layer: 5
+  m_Name: Thanks
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &917277933
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 917277932}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1468134670}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 884.6052, y: 400.1732}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &917277934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 917277932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 60
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 10
+    m_MaxSize: 137
+    m_Alignment: 1
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: "Thanks for playing \nAxolotl by Hesi"
+--- !u!222 &917277935
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 917277932}
+  m_CullTransparentMesh: 1
 --- !u!1 &924058926
 GameObject:
   m_ObjectHideFlags: 0
@@ -33506,6 +33588,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 595047771}
+  - {fileID: 917277933}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -41025,15 +41108,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093294840962773547, guid: ea25032fbfaf0d84487cb4bdcca83e1e, type: 3}
       propertyPath: m_LocalScale.x
-      value: 2.6954
+      value: 7.28917
       objectReference: {fileID: 0}
     - target: {fileID: 7093294840962773547, guid: ea25032fbfaf0d84487cb4bdcca83e1e, type: 3}
       propertyPath: m_LocalScale.y
-      value: 2.6954
+      value: 7.28917
       objectReference: {fileID: 0}
     - target: {fileID: 7093294840962773547, guid: ea25032fbfaf0d84487cb4bdcca83e1e, type: 3}
       propertyPath: m_LocalScale.z
-      value: 2.6954
+      value: 7.28917
       objectReference: {fileID: 0}
     - target: {fileID: 7093294840962773547, guid: ea25032fbfaf0d84487cb4bdcca83e1e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -41075,6 +41158,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7093294840962773557, guid: ea25032fbfaf0d84487cb4bdcca83e1e, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: b58c11bf1a666324ea6f8a5d8430e146, type: 2}
     - target: {fileID: 7093294840962773558, guid: ea25032fbfaf0d84487cb4bdcca83e1e, type: 3}
       propertyPath: m_Name
       value: Collect_Adapt Variant
@@ -41157,6 +41244,7 @@ MonoBehaviour:
   collectA: {fileID: 1663637097}
   collectB: {fileID: 563238826}
   collectC: {fileID: 43168797}
+  thanksText: {fileID: 917277932}
 --- !u!54 &2035397702
 Rigidbody:
   m_ObjectHideFlags: 0
